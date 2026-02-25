@@ -1,5 +1,7 @@
 package tests;
 
+import models.lombok.RegistrationBodyLombokModel;
+import models.lombok.RegistrationResponseLombokModel;
 import models.pojo.RegistrationBodyPojoModel;
 import models.pojo.RegistrationResponsePojoModel;
 import net.datafaker.Faker;
@@ -26,10 +28,6 @@ public class RegistrationTests {
 
     @Test
     public void successfulRegistrationTest_bad_practice(){
-        Faker faker = new Faker();
-        String username = faker.name().firstName();
-        String password = faker.name().firstName();
-
         // move to model
         String data = "{\"username\": \"" + username + "\",\"password\": \"" + password + "\"}";
 
@@ -48,27 +46,12 @@ public class RegistrationTests {
     }
 
     @Test
-    public void successfulRegistrationTest(){
-        String data = "{\"username\": \"" + username + "\",\"password\": \"" + password + "\"}";
-
-        given()
-                .log().all()
-                .contentType(JSON)
-                .body(data)
-                .when()
-                .post("http://bookclub.qa.guru:8000/api/v1/users/register/")
-                .then()
-                .log().all()
-                .statusCode(201)
-                .body("username", is(username))
-                .body("id", notNullValue());
-    }
-
-    @Test
     public void successfulRegistrationTest_with_pojo(){
         RegistrationBodyPojoModel data = new RegistrationBodyPojoModel();
         data.setUsername(username);
         data.setPassword(password);
+
+//        RegistrationBodyPojoModel data = new RegistrationBodyPojoModel(username, password);
 
         RegistrationResponsePojoModel registrationResponse = given()
                 .log().all()
@@ -84,6 +67,30 @@ public class RegistrationTests {
 
         assertEquals(username, registrationResponse.getUsername());
     }
+
+    @Test
+    public void successfulRegistrationTest_with_lombok(){
+        RegistrationBodyLombokModel data = new RegistrationBodyLombokModel();
+        data.setUsername(username);
+        data.setPassword(password);
+
+//        RegistrationBodyLombokModel data = new RegistrationBodyLombokModel(username, password);
+
+        RegistrationResponseLombokModel registrationResponse = given()
+                .log().all()
+                .contentType(JSON)
+                .body(data)
+                .when()
+                .post("http://bookclub.qa.guru:8000/api/v1/users/register/")
+                .then()
+                .log().all()
+                .statusCode(201)
+                .extract()
+                .as(RegistrationResponseLombokModel.class);
+
+        assertEquals(username, registrationResponse.getUsername());
+    }
+
 
     @Test
     public void existingUser400Test(){
