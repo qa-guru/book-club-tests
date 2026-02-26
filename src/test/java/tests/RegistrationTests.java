@@ -1,23 +1,19 @@
 package tests;
 
-import models.registration.lombok.RegistrationBodyLombokModel;
-import models.registration.lombok.RegistrationResponseLombokModel;
-import models.registration.pojo.RegistrationBodyPojoModel;
-import models.registration.pojo.RegistrationResponsePojoModel;
-import models.registration.records.ExistingUserResponseRecordsModel;
-import models.registration.records.RegistrationBodyRecordsModel;
-import models.registration.records.RegistrationResponseRecordsModel;
+import models.registration.ExistingUserResponseModel;
+import models.registration.RegistrationBodyModel;
+import models.registration.SuccessfulRegistrationResponseModel;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
-import static org.hamcrest.Matchers.is;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class RegistrationTests {
+public class RegistrationTests extends TestBase {
 
     String username;
     String password;
@@ -30,164 +26,77 @@ public class RegistrationTests {
     }
 
     @Test
-    public void successfulRegistrationTest_bad_practice(){
-        // move to model
-        String data = "{\"username\": \"" + username + "\",\"password\": \"" + password + "\"}";
+    public void successfulRegistrationTest(){
+        RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
 
-        given()
+        SuccessfulRegistrationResponseModel registrationResponse = given()
                 .log().all()
                 .contentType(JSON)
-//                .header("content-type", ContentType.JSON)
-                .body(data)
+                .body(registrationData)
+                .basePath("/api/v1")
                 .when()
-                .post("http://bookclub.qa.guru:8000/api/v1/users/register/")
+                .post("/users/register/")
                 .then()
                 .log().all()
                 .statusCode(201)
-                .body("username", is(username))
-                .body("id", notNullValue());
-    }
-
-    @Test
-    public void successfulRegistrationTest_with_pojo(){
-        RegistrationBodyPojoModel data = new RegistrationBodyPojoModel();
-        data.setUsername(username);
-        data.setPassword(password);
-
-//        RegistrationBodyPojoModel data = new RegistrationBodyPojoModel(username, password);
-
-        RegistrationResponsePojoModel registrationResponse = given()
-                .log().all()
-                .contentType(JSON)
-                .body(data)
-                .when()
-                .post("http://bookclub.qa.guru:8000/api/v1/users/register/")
-                .then()
-                .log().all()
-                .statusCode(201)
+                .body(matchesJsonSchemaInClasspath("schemas/registration/successful_registration_response_schema.json"))
+                .body("id", notNullValue())
+                .body("username", notNullValue())
+                .body("remoteAddr", notNullValue())
                 .extract()
-                .as(RegistrationResponsePojoModel.class);
+                .as(SuccessfulRegistrationResponseModel.class);
 
-        assertEquals(username, registrationResponse.getUsername());
+        assertThat(registrationResponse.id()).isGreaterThan(0);
+        assertThat(registrationResponse.username()).isEqualTo(username);
+        assertThat(registrationResponse.firstName()).isEqualTo("");
+        assertThat(registrationResponse.lastName()).isEqualTo("");
+        assertThat(registrationResponse.email()).isEqualTo("");
+
+        String ipAddrRegexp = "^((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.){3}"
+                + "(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)$";
+        assertThat(registrationResponse.remoteAddr()).matches(ipAddrRegexp);
     }
 
     @Test
-    public void successfulRegistrationTest_with_lombok(){
-        RegistrationBodyLombokModel data = new RegistrationBodyLombokModel();
-        data.setUsername(username);
-        data.setPassword(password);
+    public void existingUserWrongRegistrationTest(){
+        RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
 
-//        RegistrationBodyLombokModel data = new RegistrationBodyLombokModel(username, password);
-
-        RegistrationResponseLombokModel registrationResponse = given()
+        SuccessfulRegistrationResponseModel firstRegistrationResponse = given()
                 .log().all()
                 .contentType(JSON)
-                .body(data)
+                .body(registrationData)
+                .basePath("/api/v1")
                 .when()
-                .post("http://bookclub.qa.guru:8000/api/v1/users/register/")
+                .post("/users/register/")
                 .then()
                 .log().all()
                 .statusCode(201)
+                .body(matchesJsonSchemaInClasspath("schemas/registration/successful_registration_response_schema.json"))
+                .body("id", notNullValue())
+                .body("username", notNullValue())
+                .body("remoteAddr", notNullValue())
                 .extract()
-                .as(RegistrationResponseLombokModel.class);
+                .as(SuccessfulRegistrationResponseModel.class);
 
-        assertEquals(username, registrationResponse.getUsername());
-    }
+        assertThat(firstRegistrationResponse.username()).isEqualTo(username);
 
-    @Test
-    public void successfulRegistrationTest_with_records(){
-        RegistrationBodyRecordsModel data = new RegistrationBodyRecordsModel(username, password);
-
-        RegistrationResponseRecordsModel registrationResponse = given()
+        ExistingUserResponseModel secondRegistrationResponse = given()
                 .log().all()
                 .contentType(JSON)
-                .body(data)
+                .body(registrationData)
+                .basePath("/api/v1")
                 .when()
-                .post("http://bookclub.qa.guru:8000/api/v1/users/register/")
-                .then()
-                .log().all()
-                .statusCode(201)
-                .extract()
-                .as(RegistrationResponseRecordsModel.class);
-
-        assertEquals(username, registrationResponse.username());
-    }
-
-    @Test
-    public void existingUser400Test(){
-        RegistrationBodyRecordsModel data = new RegistrationBodyRecordsModel(username, password);
-
-        given()
-                .log().all()
-                .contentType(JSON)
-                .body(data)
-                .when()
-                .post("http://bookclub.qa.guru:8000/api/v1/users/register/")
-                .then()
-                .log().all()
-                .statusCode(201)
-                .body("username", is(username))
-                .body("id", notNullValue());
-
-        ExistingUserResponseRecordsModel response = given()
-                .log().all()
-                .contentType(JSON)
-                .body(data)
-                .when()
-                .post("http://bookclub.qa.guru:8000/api/v1/users/register/")
+                .post("/users/register/")
                 .then()
                 .log().all()
                 .statusCode(400)
+                .body(matchesJsonSchemaInClasspath("schemas/registration/existing_user_registration_response_schema.json"))
+                .body("username", notNullValue())
                 .extract()
-                .as(ExistingUserResponseRecordsModel.class);
+                .as(ExistingUserResponseModel.class);
 
         String expectedError = "A user with that username already exists.";
-        assertEquals(expectedError, response.username().getFirst());
-    }
-
-    @Test
-    public void invalidUsername400Test(){
-        String data = "{\"username\": \"" + username + "\",\"password\": \"" + password + "\"}";
-
-        given()
-                .log().all()
-                .contentType(JSON)
-//                .header("content-type", ContentType.JSON)
-                .body(data)
-                .when()
-                .post("http://bookclub.qa.guru:8000/api/v1/users/register/")
-                .then()
-                .log().all()
-                .statusCode(201)
-                .body("username", is(username))
-                .body("id", notNullValue());
-    }
-
-    @Test
-    public void unsupportedMediaType415Test(){
-        String data = "{\"username\": \"" + username + "\",\"password\": \"" + password + "\"}";
-
-        given()
-                .body(data)
-                .when()
-                .post("http://bookclub.qa.guru:8000/api/v1/users/register")
-                .then()
-                .statusCode(201)
-                .body("username", is(username))
-                .body("id", notNullValue());
-    }
-
-    @Test
-    public void negativeRegistration500Test(){
-        String data = "{\"username\": \"" + username + "\",\"password\": \"" + password + "\"}";
-
-        given()
-                .body(data)
-                .when()
-                .post("http://bookclub.qa.guru:8000/api/v1/users/register")
-                .then()
-                .statusCode(201)
-                .body("username", is(username))
-                .body("id", notNullValue());
+        String actualError = secondRegistrationResponse.username().getFirst();
+        assertThat(actualError).isEqualTo(expectedError);
     }
 }
