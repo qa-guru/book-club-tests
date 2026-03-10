@@ -6,11 +6,7 @@ import models.registration.SuccessfulRegistrationResponseModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static specs.registration.RegistrationSpec.existingUserRegistrationResponseSpec;
-import static specs.registration.RegistrationSpec.registrationRequestSpec;
-import static specs.registration.RegistrationSpec.successfulRegistrationResponseSpec;
 import static tests.TestData.REGISTRATION_EXISTING_USER_ERROR;
 import static tests.TestData.REGISTRATION_IP_REGEXP;
 
@@ -27,18 +23,11 @@ public class RegistrationTests extends TestBase {
     }
 
     @Test
-    public void successfulRegistrationTest(){
+    public void successfulRegistrationTest() {
         RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
 
-        SuccessfulRegistrationResponseModel registrationResponse = given()
-                .spec(registrationRequestSpec)
-                .body(registrationData)
-                .when()
-                .post("/users/register/")
-                .then()
-                .spec(successfulRegistrationResponseSpec)
-                .extract()
-                .as(SuccessfulRegistrationResponseModel.class);
+        SuccessfulRegistrationResponseModel registrationResponse =
+                api.users.register(registrationData);
 
         assertThat(registrationResponse.id()).isGreaterThan(0);
         assertThat(registrationResponse.username()).isEqualTo(username);
@@ -50,30 +39,16 @@ public class RegistrationTests extends TestBase {
     }
 
     @Test
-    public void existingUserWrongRegistrationTest(){
+    public void existingUserWrongRegistrationTest() {
         RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
 
-        SuccessfulRegistrationResponseModel firstRegistrationResponse = given()
-                .spec(registrationRequestSpec)
-                .body(registrationData)
-                .when()
-                .post("/users/register/")
-                .then()
-                .spec(successfulRegistrationResponseSpec)
-                .extract()
-                .as(SuccessfulRegistrationResponseModel.class);
+        SuccessfulRegistrationResponseModel firstRegistrationResponse =
+                api.users.register(registrationData);
 
         assertThat(firstRegistrationResponse.username()).isEqualTo(username);
 
-        ExistingUserResponseModel secondRegistrationResponse = given()
-                .spec(registrationRequestSpec)
-                .body(registrationData)
-                .when()
-                .post("/users/register/")
-                .then()
-                .spec(existingUserRegistrationResponseSpec)
-                .extract()
-                .as(ExistingUserResponseModel.class);
+        ExistingUserResponseModel secondRegistrationResponse =
+                api.users.registerExistingUser(registrationData);
 
         String expectedError = REGISTRATION_EXISTING_USER_ERROR;
         String actualError = secondRegistrationResponse.username().get(0);
