@@ -43,7 +43,6 @@ public class LoginTests_without_specs extends TestBase {
         String expectedTokenPath = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
         String actualAccess = loginResponse.access();
         String actualRefresh = loginResponse.refresh();
-
         assertThat(actualAccess).startsWith(expectedTokenPath);
         assertThat(actualRefresh).startsWith(expectedTokenPath);
         assertThat(actualAccess).isNotEqualTo(actualRefresh);

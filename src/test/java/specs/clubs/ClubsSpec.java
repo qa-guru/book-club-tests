@@ -6,6 +6,7 @@ import io.restassured.specification.ResponseSpecification;
 
 import static io.restassured.filter.log.LogDetail.ALL;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static specs.BaseSpec.baseRequestSpec;
@@ -22,5 +23,26 @@ public class ClubsSpec {
             .expectBody("count", notNullValue())
             .expectBody("count", greaterThanOrEqualTo(0))
             .expectBody("results", notNullValue())
+            .build();
+
+    public static ResponseSpecification successfulCreateClubResponseSpec = new ResponseSpecBuilder()
+            .log(ALL)
+            .expectStatusCode(201)
+            .expectBody(matchesJsonSchemaInClasspath(
+                    "schemas/clubs/successful_create_club_response_schema.json"))
+            .expectBody("id", notNullValue())
+            .expectBody("bookTitle", notNullValue())
+            .expectBody("bookAuthors", notNullValue())
+            .expectBody("publicationYear", notNullValue())
+            .expectBody("description", notNullValue())
+            .expectBody("telegramChatLink", notNullValue())
+            .build();
+
+    public static ResponseSpecification unauthorizedCreateClubResponseSpec = new ResponseSpecBuilder()
+            .log(ALL)
+            .expectStatusCode(401)
+            .expectBody(matchesJsonSchemaInClasspath(
+                    "schemas/clubs/unauthorized_create_club_response_schema.json"))
+            .expectBody("detail", equalTo("Authentication credentials were not provided."))
             .build();
 }
