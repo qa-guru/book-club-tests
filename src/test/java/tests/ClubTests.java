@@ -4,21 +4,27 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
-import models.clubs.ClubModel;
 import models.clubs.CreateClubBodyModel;
 import models.login.LoginBodyModel;
 import models.login.SuccessfulLoginResponseModel;
 import models.registration.RegistrationBodyModel;
 import models.registration.SuccessfulRegistrationResponseModel;
+import models.clubs.ClubModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import tests.extensions.ClubId;
+import tests.extensions.WithNewClub;
+import tests.extensions.WithNewUser;
+import tests.extensions.WithNewUserClubExtension;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.*;
 
+@ExtendWith(WithNewUserClubExtension.class)
 @Feature("Клубы")
 public class ClubTests extends TestBase {
 
@@ -33,32 +39,16 @@ public class ClubTests extends TestBase {
     }
 
     @Test
+    @WithNewUser
+    @WithNewClub
     @Description("Регистрация и логин через API, создание клуба, имитация сессии в localStorage, переход на страницу клуба. " +
             "Ожидается: при попытке выйти из клуба как владелец показывается ошибка «Не удалось покинуть клуб».")
     @DisplayName("[API] Владелец клуба не может покинуть клуб")
     @Severity(SeverityLevel.CRITICAL)
-    public void cantLeaveClubAsOwnerTest(){
-        SuccessfulLoginResponseModel loginResponse = clubPage.openBlankPageWithNewUser();
-        String accessToken = loginResponse.access();
-
-        ClubModel createdClub = api.clubs.createRandomClub(accessToken);
-        String clubId = createdClub.id().toString();
-
+    public void cantLeaveClubAsOwnerTest(@ClubId String clubId) {
         clubPage.openPageById(clubId)
                 .pressLeaveClubButton()
                 .assertOwnerCannotLeaveClub();
-    }
-
-    @Test
-    @Disabled("Требуются расширения @WithNewUser / @WithNewClub; без них страница и сессия не подготовлены.")
-    @Description("Проверка UI при уже подготовленной странице клуба (данные задаются расширениями JUnit). " +
-            "После подтверждения выхода отображается сообщение о невозможности покинуть клуб.")
-    @DisplayName("[API] Владелец клуба не может покинуть клуб (расширения JUnit)")
-    @Severity(SeverityLevel.NORMAL)
-//    @WithNewUser
-//    @WithNewClub
-    public void cantLeaveClubAsOwnerTest_with_extensions (){
-        clubPage.assertOwnerCannotLeaveClub();
     }
 
     @Test
