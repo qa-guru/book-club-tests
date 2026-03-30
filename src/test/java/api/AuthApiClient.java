@@ -15,6 +15,7 @@ import static specs.logout.LogoutSpec.successfulLogoutResponseSpec;
 
 public class AuthApiClient {
 
+    @Step("[API] Авторизация POST /auth/token/")
     public SuccessfulLoginResponseModel login(LoginBodyModel loginBody) {
         return given(loginRequestSpec)
                 .body(loginBody)
@@ -26,7 +27,7 @@ public class AuthApiClient {
                 .as(SuccessfulLoginResponseModel.class);
     }
 
-    @Step("Авторизация и получение токена")
+    @Step("[API] Авторизация и получение токена")
     public String loginAndGetRefreshToken(LoginBodyModel loginBody) {
         return given(loginRequestSpec)
                 .body(loginBody)
@@ -38,6 +39,7 @@ public class AuthApiClient {
                 .path("refresh");
     }
 
+    @Step("[API] Попытка авторизации с неверными учётными данными POST /auth/token/")
     public WrongCredentialsLoginResponseModel loginWrongCredentials(LoginBodyModel loginBody) {
         return given(loginRequestSpec)
                 .body(loginBody)
@@ -49,7 +51,7 @@ public class AuthApiClient {
                 .as(WrongCredentialsLoginResponseModel.class);
     }
 
-    @Step("Отправка запроса logout")
+    @Step("[API] Отправка запроса logout")
     public void logout(LogoutBodyModel logoutBody) {
         given(logoutRequestSpec)
                 .body(logoutBody)

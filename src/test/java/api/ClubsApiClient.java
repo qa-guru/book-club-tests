@@ -13,7 +13,7 @@ import static specs.clubs.ClubsSpec.unauthorizedCreateClubResponseSpec;
 
 public class ClubsApiClient {
 
-    @Step("Получение списка клубов GET /clubs/")
+    @Step("[API] Получение списка клубов GET /clubs/")
     public ClubsListResponseModel getClubs() {
         return given(clubsRequestSpec)
                 .when()
@@ -24,7 +24,7 @@ public class ClubsApiClient {
                 .as(ClubsListResponseModel.class);
     }
 
-    @Step("Создание клуба POST /clubs/")
+    @Step("[API] Создание клуба POST /clubs/")
     public ClubModel createClub(String accessToken, CreateClubBodyModel body) {
         return given(clubsRequestSpec)
                 .header("Authorization", "Bearer " + accessToken)
@@ -37,7 +37,7 @@ public class ClubsApiClient {
                 .as(ClubModel.class);
     }
 
-    @Step("Попытка создать клуб без авторизации POST /clubs/")
+    @Step("[API] Попытка создать клуб без авторизации POST /clubs/")
     public void createClubWithoutAuth(CreateClubBodyModel body) {
         given(clubsRequestSpec)
                 .body(body)

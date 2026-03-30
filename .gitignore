@@ -15,3 +15,9 @@ gradle/
 
 ### Logs ###
 *.log
+/allure-results/
+
+### Python (python_clubs_tests) ###
+python_clubs_tests/.venv/
+python_clubs_tests/**/__pycache__/
+python_clubs_tests/.pytest_cache/
