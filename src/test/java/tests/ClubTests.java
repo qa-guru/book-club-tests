@@ -38,73 +38,19 @@ public class ClubTests extends TestBase {
     @DisplayName("[API] Владелец клуба не может покинуть клуб")
     @Severity(SeverityLevel.CRITICAL)
     public void cantLeaveClubAsOwnerTest(){
-        // register user
-        RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
-        SuccessfulRegistrationResponseModel registrationResponse = api.users.register(registrationData);
-        // login user
-        LoginBodyModel loginData = new LoginBodyModel(username, password);
-        SuccessfulLoginResponseModel loginResponse = api.auth.login(loginData);
-
+        SuccessfulLoginResponseModel loginResponse = clubPage.openBlankPageWithNewUser();
         String accessToken = loginResponse.access();
-        String refreshToken = loginResponse.refresh();
 
-        // todo move to model
-        String localStorageAuthBody = """
-                {
-                  "user": {
-                    "id": %d,
-                    "username": "%s",
-                    "firstName": "%s",
-                    "lastName": "%s",
-                    "email": "%s",
-                    "remoteAddr": "%s"
-                  },
-                  "accessToken": "%s",
-                  "refreshToken": "%s",
-                  "isAuthenticated": true
-                }
-                """.formatted(
-                registrationResponse.id(),
-                registrationResponse.username(),
-                registrationResponse.firstName(),
-                registrationResponse.lastName(),
-                registrationResponse.email(),
-                registrationResponse.remoteAddr(),
-                accessToken,
-                refreshToken
-        );
-
-        // create club
-        String bookTitle = faker.book().title();
-        String bookAuthors = faker.book().author();
-        Integer publicationYear = 2009;
-        String description = faker.lorem().sentence();
-        String telegramChatLink = "https://t.me/qa_guru";
-
-        CreateClubBodyModel createClubBody = new CreateClubBodyModel(
-                bookTitle,
-                bookAuthors,
-                publicationYear,
-                description,
-                telegramChatLink
-        );
-
-        ClubModel createdClub = api.clubs.createClub(accessToken, createClubBody);
+        ClubModel createdClub = api.clubs.createRandomClub(accessToken);
         String clubId = createdClub.id().toString();
 
-        // open club
-        open("/favicon.ico");
-        localStorage().setItem("book_club_auth", localStorageAuthBody);
-        open("/clubs/" + clubId);
-
-        // cant leave club as owner
-        $(".club-content").shouldBe(visible);
-        $(".leave-btn").click();
-        confirm();
-        $(".error").shouldHave(text("Не удалось покинуть клуб"));
+        clubPage.openPageById(clubId)
+                .pressLeaveClubButton()
+                .assertOwnerCannotLeaveClub();
     }
 
     @Test
+    @Disabled("Требуются расширения @WithNewUser / @WithNewClub; без них страница и сессия не подготовлены.")
     @Description("Проверка UI при уже подготовленной странице клуба (данные задаются расширениями JUnit). " +
             "После подтверждения выхода отображается сообщение о невозможности покинуть клуб.")
     @DisplayName("[API] Владелец клуба не может покинуть клуб (расширения JUnit)")
@@ -112,11 +58,7 @@ public class ClubTests extends TestBase {
 //    @WithNewUser
 //    @WithNewClub
     public void cantLeaveClubAsOwnerTest_with_extensions (){
-        // cant leave club as owner
-        $(".club-content").shouldBe(visible);
-        $(".leave-btn").click();
-        confirm();
-        $(".error").shouldHave(text("Не удалось покинуть клуб"));
+        clubPage.assertOwnerCannotLeaveClub();
     }
 
     @Test
@@ -223,11 +165,7 @@ public class ClubTests extends TestBase {
         $(".clubs-list").$(byText(username))
                 .parent().parent().$(".open-btn").click();
 
-        // wrong leave club
-        $(".club-content").shouldBe(visible);
-        $(".leave-btn").click();
-        confirm();
-        $(".error").shouldHave(text("Не удалось покинуть клуб"));
+        clubPage.assertOwnerCannotLeaveClub();
     }
 
     @Test
@@ -262,10 +200,6 @@ public class ClubTests extends TestBase {
         $(".clubs-list").$(byText(username))
                 .parent().parent().$(".open-btn").click();
 
-        // wrong leave club
-        $(".club-content").shouldBe(visible);
-        $(".leave-btn").click();
-        confirm();
-        $(".error").shouldHave(text("Не удалось покинуть клуб"));
+        clubPage.assertOwnerCannotLeaveClub();
     }
 }

@@ -1,6 +1,8 @@
 package pages;
 
 import api.ApiClient;
+import models.localstorage.LocalStorageAuthRequestBody;
+import models.localstorage.UserData;
 import models.login.LoginBodyModel;
 import models.login.SuccessfulLoginResponseModel;
 import models.registration.RegistrationBodyModel;
@@ -10,13 +12,15 @@ import net.datafaker.Faker;
 
 import static com.codeborne.selenide.Selenide.localStorage;
 import static com.codeborne.selenide.Selenide.open;
+import static tests.TestData.*;
 
 public class BasePage {
     ApiClient api = new ApiClient();
 
-    @Step("[UI] Регистрация пользователя, установка сессии и открытие страницы: {url}")
-    public void openPageWithNewUser(String url) {
-        String username = new Faker().name().firstName();
+    @Step("[UI] Регистрация пользователя, установка сессии и открытие страницы:")
+    public SuccessfulLoginResponseModel openBlankPageWithNewUser() {
+        Faker faker = new Faker();
+        String username = faker.name().firstName() + faker.name().lastName();
         String password = "12345";
 
         // register user
@@ -27,47 +31,64 @@ public class BasePage {
         LoginBodyModel loginData = new LoginBodyModel(username, password);
         SuccessfulLoginResponseModel loginResponse = api.auth.login(loginData);
 
-        String accessToken = loginResponse.access();
-        String refreshToken = loginResponse.refresh();
-
-        // todo move to model
-        String localStorageAuthBody = """
-                {
-                  "user": {
-                    "id": %d,
-                    "username": "%s",
-                    "firstName": "%s",
-                    "lastName": "%s",
-                    "email": "%s",
-                    "remoteAddr": "%s"
-                  },
-                  "accessToken": "%s",
-                  "refreshToken": "%s",
-                  "isAuthenticated": true
-                }
-                """.formatted(
+        UserData userData = new UserData(
                 registrationResponse.id(),
                 registrationResponse.username(),
                 registrationResponse.firstName(),
                 registrationResponse.lastName(),
                 registrationResponse.email(),
-                registrationResponse.remoteAddr(),
-                accessToken,
-                refreshToken
-        );
+                registrationResponse.remoteAddr());
+        LocalStorageAuthRequestBody authBody = new LocalStorageAuthRequestBody(
+                userData,
+                loginResponse.access(),
+                loginResponse.refresh(),
+                true);
 
-        // open logout page
-        open("/favicon.ico");
-        setLocalStorage("book_club_auth", localStorageAuthBody);
-        open(url);
+        openFaviconAndSetLocalStorage("book_club_auth", authBody.toJson());
+
+        return loginResponse;
     }
 
 
     @Step("[UI] Открытие страницы с существующим пользователем")
-    public void openPageWithExistingUser() {} // todo implement
+    public void openBlankPageWithExistingUser() {
+        LoginBodyModel loginData = new LoginBodyModel(LOGIN_USERNAME, LOGIN_PASSWORD);
+        SuccessfulLoginResponseModel loginResponse = api.auth.login(loginData);
+
+        String accessToken = loginResponse.access();
+        String refreshToken = loginResponse.refresh();
+
+        UserData userData = new UserData(
+                Integer.parseInt(LOGIN_ID),
+                LOGIN_USERNAME,
+                "",
+                "",
+                "",
+                ""
+        );
+        LocalStorageAuthRequestBody authBody = new LocalStorageAuthRequestBody(
+                userData,
+                accessToken,
+                refreshToken,
+                true
+        );
+        openFaviconAndSetLocalStorage("book_club_auth", authBody.toJson());
+    }
+
+    @Step("[UI] Открытие /favicon.ico и установка данных в localstorage")
+    public void openFaviconAndSetLocalStorage(String key, String value) {
+        openFavicon();
+        setLocalStorage(key, value);
+    }
 
     @Step("[UI] Установка данных в localstorage")
     public void setLocalStorage(String key, String value) {
         localStorage().setItem(key, value);
     }
+
+    @Step("[UI] Открытие /favicon.ico")
+    public void openFavicon () {
+        open("/favicon.ico");
+    }
+
 }

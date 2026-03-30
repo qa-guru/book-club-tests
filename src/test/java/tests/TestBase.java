@@ -10,17 +10,20 @@ import net.datafaker.Faker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import pages.ClubPage;
 import pages.LoginPage;
-import pages.LogoutPage;
+import pages.ProfilePage;
 
 import static com.codeborne.selenide.Selenide.closeWebDriver;
+import static com.codeborne.selenide.Selenide.webdriver;
 
 public class TestBase {
     Faker faker = new Faker();
     protected static final ApiClient api = new ApiClient();
 
+    ClubPage clubPage = new ClubPage();
     LoginPage loginPage = new LoginPage();
-    LogoutPage logoutPage = new LogoutPage();
+    ProfilePage profilePage = new ProfilePage();
 
     @BeforeAll
     public static void setUp() {
@@ -38,10 +41,12 @@ public class TestBase {
 
     @AfterEach
     void addAttachments() {
-        Attach.screenshotAs("Last screenshot");
-        Attach.pageSource();
-        Attach.browserConsoleLogs();
-//        Attach.addVideo();
-        closeWebDriver();
+        if(webdriver().driver().hasWebDriverStarted()) {
+            Attach.screenshotAs("Last screenshot");
+            Attach.pageSource();
+            Attach.browserConsoleLogs();
+//          Attach.addVideo();
+            closeWebDriver();
+        }
     }
 }

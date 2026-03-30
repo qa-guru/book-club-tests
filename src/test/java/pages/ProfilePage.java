@@ -4,14 +4,16 @@ import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 
 import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.open;
 
-public class LogoutPage extends BasePage {
+public class ProfilePage extends BasePage {
     private SelenideElement logoutButton = $(".logout-btn");
 
     String pagePath = "/profile";
 
-    public LogoutPage openPageWithNewUser() {
-        openPageWithNewUser(pagePath);
+    @Step("[UI] Открытие страницы профиля пользователя")
+    public ProfilePage openPage() {
+        open(pagePath);
 
         return this;
     }
