@@ -1,6 +1,6 @@
 package tests.examples;
 
-import models.login.LoginBodyModel;
+import models.login.LoginRequestModel;
 import models.login.SuccessfulLoginResponseModel;
 import models.login.WrongCredentialsLoginResponseModel;
 import org.junit.jupiter.api.Disabled;
@@ -23,7 +23,7 @@ public class LoginTests_without_specs extends TestBase {
     @Test
     @Disabled
     public void successfulLoginTest(){
-        LoginBodyModel loginData = new LoginBodyModel(username, password);
+        LoginRequestModel loginData = new LoginRequestModel(username, password);
 
         SuccessfulLoginResponseModel loginResponse = given()
                 .log().all()
@@ -52,7 +52,7 @@ public class LoginTests_without_specs extends TestBase {
     @Test
     @Disabled
     public void wrongCredentialsLoginTest(){
-        LoginBodyModel loginData = new LoginBodyModel(username, wrongPassword);
+        LoginRequestModel loginData = new LoginRequestModel(username, wrongPassword);
 
         WrongCredentialsLoginResponseModel loginResponse = given()
                 .log().all()

@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org",
+  "type": "object",
+  "properties": {
+    "username": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "password": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    }
+  },
+  "anyOf": [
+    { "required": ["username"] },
+    { "required": ["password"] }
+  ],
+  "additionalProperties": false
+}

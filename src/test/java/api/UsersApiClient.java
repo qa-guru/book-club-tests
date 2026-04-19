@@ -1,17 +1,16 @@
 package api;
 
+import models.registration.ErrorFieldRegistrationResponseModel;
 import models.registration.ExistingUserResponseModel;
-import models.registration.RegistrationBodyModel;
+import models.registration.RegistrationRequestModel;
 import models.registration.SuccessfulRegistrationResponseModel;
 
 import static io.restassured.RestAssured.given;
-import static specs.registration.RegistrationSpec.existingUserRegistrationResponseSpec;
-import static specs.registration.RegistrationSpec.registrationRequestSpec;
-import static specs.registration.RegistrationSpec.successfulRegistrationResponseSpec;
+import static specs.registration.RegistrationSpec.*;
 
 public class UsersApiClient {
 
-    public SuccessfulRegistrationResponseModel register(RegistrationBodyModel body) {
+    public SuccessfulRegistrationResponseModel register(RegistrationRequestModel body) {
         return given(registrationRequestSpec)
                 .body(body)
                 .when()
@@ -22,7 +21,7 @@ public class UsersApiClient {
                 .as(SuccessfulRegistrationResponseModel.class);
     }
 
-    public ExistingUserResponseModel registerExistingUser(RegistrationBodyModel body) {
+    public ExistingUserResponseModel registerExistingUser(RegistrationRequestModel body) {
         return given(registrationRequestSpec)
                 .body(body)
                 .when()
@@ -31,5 +30,16 @@ public class UsersApiClient {
                 .spec(existingUserRegistrationResponseSpec)
                 .extract()
                 .as(ExistingUserResponseModel.class);
+    }
+
+    public ErrorFieldRegistrationResponseModel registerEmptyField(RegistrationRequestModel body) {
+        return given(registrationRequestSpec)
+                .body(body)
+                .when()
+                .post("/users/register/")
+                .then()
+                .spec(emptyFieldRegistrationResponseSpec)
+                .extract()
+                .as(ErrorFieldRegistrationResponseModel.class);
     }
 }
