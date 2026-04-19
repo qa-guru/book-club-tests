@@ -53,7 +53,7 @@ public class LoginTests extends TestBase {
         EmptyFieldLoginResponseModel loginResponse = api.auth.loginEmptyField(loginData);
 
         String expectedError = EMPTY_FIELD_ERROR;
-        String actualError = loginResponse.getError();
+        String actualError = loginResponse.username().getFirst();
         assertThat(actualError).isEqualTo(expectedError);
     }
 
@@ -64,7 +64,7 @@ public class LoginTests extends TestBase {
         EmptyFieldLoginResponseModel loginResponse = api.auth.loginEmptyField(loginData);
 
         String expectedError = EMPTY_FIELD_ERROR;
-        String actualError = loginResponse.getError();
+        String actualError = loginResponse.password().getFirst();
         assertThat(actualError).isEqualTo(expectedError);
     }
 
@@ -75,8 +75,10 @@ public class LoginTests extends TestBase {
         EmptyFieldLoginResponseModel loginResponse = api.auth.loginEmptyField(loginData);
 
         String expectedError = EMPTY_FIELD_ERROR;
-        String actualError = loginResponse.getError();
-        assertThat(actualError).isEqualTo(expectedError);
+        String actualUsernameError = loginResponse.username().getFirst();
+        String actualPasswordError = loginResponse.password().getFirst();
+        assertThat(actualUsernameError).isEqualTo(expectedError);
+        assertThat(actualPasswordError).isEqualTo(expectedError);
     }
 
 }
