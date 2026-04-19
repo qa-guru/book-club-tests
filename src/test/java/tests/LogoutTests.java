@@ -47,7 +47,7 @@ public class LogoutTests extends TestBase {
         Error400LogoutResponseModel logoutResponse = api.auth.error400Logout(logoutData);
 
         String expectedError = EMPTY_FIELD_ERROR;
-        String actualError = logoutResponse.refresh().getFirst();
+        String actualError = logoutResponse.refresh().get(0);
         assertThat(actualError).isEqualTo(expectedError);
     }
 }
