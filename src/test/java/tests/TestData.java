@@ -15,6 +15,7 @@ public class TestData {
     // Errors
     public static final String LOGIN_WRONG_CREDENTIALS_ERROR = "Invalid username or password.";
     public static final String EMPTY_FIELD_ERROR = "This field may not be blank.";
+    public static final String REQUIRED_FIELD_ERROR = "This field is required.";
     public static final String REGISTRATION_EXISTING_USER_ERROR = "A user with that username already exists.";
     public static final String LONG_USERNAME_ERROR = "Ensure this field has no more than 150 characters.";
     public static final String LONG_PASSWORD_ERROR = "Ensure this field has no more than 128 characters.";

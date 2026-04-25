@@ -1,4 +1,4 @@
-package specs.users.registration;
+package specs.users.put;
 
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.specification.RequestSpecification;
@@ -9,25 +9,28 @@ import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInC
 import static org.hamcrest.Matchers.notNullValue;
 import static specs.BaseSpec.baseRequestSpec;
 
-public class RegistrationSpec {
+public class PutUserSpec {
 
-    public static RequestSpecification registrationRequestSpec = baseRequestSpec;
+    public static RequestSpecification putUserRequestSpec = baseRequestSpec;
 
-    public static ResponseSpecification successfulRegistrationResponseSpec = new ResponseSpecBuilder()
+    public static ResponseSpecification successfulPutUserResponseSpec = new ResponseSpecBuilder()
             .log(ALL)
-            .expectStatusCode(201)
+            .expectStatusCode(200)
             .expectBody(matchesJsonSchemaInClasspath(
                     "schemas/users/successful_user_response_schema.json"))
             .expectBody("id", notNullValue())
             .expectBody("username", notNullValue())
+            .expectBody("firstName", notNullValue())
+            .expectBody("lastName", notNullValue())
+            .expectBody("email", notNullValue())
             .expectBody("remoteAddr", notNullValue())
             .build();
 
-    public static ResponseSpecification validationErrorRegistrationResponseSpec = new ResponseSpecBuilder()
+    public static ResponseSpecification validationErrorPutUserResponseSpec = new ResponseSpecBuilder()
             .log(ALL)
             .expectStatusCode(400)
             .expectBody(matchesJsonSchemaInClasspath(
-                    "schemas/users/registration/validation_error_registration_response_schema.json"))
+                    "schemas/users/put/validation_error_put_user_response.json"))
             .build();
-}
 
+}

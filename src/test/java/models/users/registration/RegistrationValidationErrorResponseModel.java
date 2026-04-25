@@ -3,7 +3,9 @@ package models.users.registration;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+
+@JsonInclude(NON_NULL)
 public record RegistrationValidationErrorResponseModel(List<String> username,
                                                        List<String> password) {
 

@@ -17,14 +17,14 @@ public class LogoutSpec {
             .expectStatusCode(200)
             .build();
 
-    public static ResponseSpecification error401LogoutResponseSpec = new ResponseSpecBuilder()
+    public static ResponseSpecification authErrorLogoutResponseSpec = new ResponseSpecBuilder()
             .log(ALL)
             .expectStatusCode(401)
             .expectBody(matchesJsonSchemaInClasspath(
                     "schemas/auth/logout/auth_error_logout_response_schema.json"))
             .build();
 
-    public static ResponseSpecification error400LogoutResponseSpec = new ResponseSpecBuilder()
+    public static ResponseSpecification validationErrorLogoutResponseSpec = new ResponseSpecBuilder()
             .log(ALL)
             .expectStatusCode(400)
             .expectBody(matchesJsonSchemaInClasspath(

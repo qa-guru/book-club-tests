@@ -2,7 +2,7 @@ package tests;
 
 import models.users.registration.RegistrationValidationErrorResponseModel;
 import models.users.registration.RegistrationRequestModel;
-import models.users.registration.RegistrationSuccessResponseModel;
+import models.users.UserSuccessResponseModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -25,7 +25,7 @@ public class RegistrationTests extends TestBase {
     public void successfulRegistrationTest() {
         RegistrationRequestModel registrationData = new RegistrationRequestModel(username, password);
 
-        RegistrationSuccessResponseModel registrationResponse =
+        UserSuccessResponseModel registrationResponse =
                 api.users.register(registrationData);
 
         assertThat(registrationResponse.id()).isGreaterThan(0);
@@ -41,13 +41,13 @@ public class RegistrationTests extends TestBase {
     public void existingUserWrongRegistrationTest() {
         RegistrationRequestModel registrationData = new RegistrationRequestModel(username, password);
 
-        RegistrationSuccessResponseModel firstRegistrationResponse =
+        UserSuccessResponseModel firstRegistrationResponse =
                 api.users.register(registrationData);
 
         assertThat(firstRegistrationResponse.username()).isEqualTo(username);
 
         RegistrationValidationErrorResponseModel secondRegistrationResponse =
-                api.users.registerExistingUser(registrationData);
+                api.users.validationErrorRegister(registrationData);
 
         String expectedError = REGISTRATION_EXISTING_USER_ERROR;
         String actualError = secondRegistrationResponse.username().get(0);
@@ -59,7 +59,7 @@ public class RegistrationTests extends TestBase {
         RegistrationRequestModel registrationData = new RegistrationRequestModel(username, "");
 
         RegistrationValidationErrorResponseModel registrationResponse =
-                api.users.registerEmptyField(registrationData);
+                api.users.validationErrorRegister(registrationData);
 
         String expectedError = EMPTY_FIELD_ERROR;
         String actualError = registrationResponse.getError();
@@ -71,7 +71,7 @@ public class RegistrationTests extends TestBase {
         RegistrationRequestModel registrationData = new RegistrationRequestModel("", password);
 
         RegistrationValidationErrorResponseModel registrationResponse =
-                api.users.registerEmptyField(registrationData);
+                api.users.validationErrorRegister(registrationData);
 
         String expectedError = EMPTY_FIELD_ERROR;
         String actualError = registrationResponse.getError();
@@ -85,7 +85,7 @@ public class RegistrationTests extends TestBase {
         RegistrationRequestModel registrationData = new RegistrationRequestModel(longName, password);
 
         RegistrationValidationErrorResponseModel registrationResponse =
-                api.users.registerEmptyField(registrationData);
+                api.users.validationErrorRegister(registrationData);
 
         String expectedError = LONG_USERNAME_ERROR;
         String actualError = registrationResponse.getError();
@@ -99,7 +99,7 @@ public class RegistrationTests extends TestBase {
         RegistrationRequestModel registrationData = new RegistrationRequestModel(username, longPassword);
 
         RegistrationValidationErrorResponseModel registrationResponse =
-                api.users.registerEmptyField(registrationData);
+                api.users.validationErrorRegister(registrationData);
 
         String expectedError = LONG_PASSWORD_ERROR;
         String actualError = registrationResponse.getError();

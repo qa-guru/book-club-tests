@@ -38,6 +38,18 @@ public class AuthApiClient {
                 .path("refresh");
     }
 
+    @Step("Авторизация и получение аксес-токена")
+    public String loginAndGetAccessToken(LoginRequestModel loginBody) {
+        return given(loginRequestSpec)
+                .body(loginBody)
+                .when()
+                .post("/auth/token/")
+                .then()
+                .spec(successfulLoginResponseSpec)
+                .extract()
+                .path("access");
+    }
+
     public LoginAuthErrorResponseModel loginWrongCredentials(LoginRequestModel loginBody) {
         return given(loginRequestSpec)
                 .body(loginBody)
@@ -70,24 +82,24 @@ public class AuthApiClient {
                 .spec(successfulLogoutResponseSpec);
     }
 
-    public LogoutValidationErrorResponseModel error400Logout(LogoutRequestModel logoutBody) {
+    public LogoutValidationErrorResponseModel validationErrorLogout(LogoutRequestModel logoutBody) {
         return given(logoutRequestSpec)
                 .body(logoutBody)
                 .when()
                 .post("/auth/logout/")
                 .then()
-                .spec(error400LogoutResponseSpec)
+                .spec(validationErrorLogoutResponseSpec)
                 .extract()
                 .as(LogoutValidationErrorResponseModel.class);
     }
 
-    public LogoutAuthErrorResponseModel error401Logout(LogoutRequestModel logoutBody) {
+    public LogoutAuthErrorResponseModel authErrorLogout(LogoutRequestModel logoutBody) {
         return given(logoutRequestSpec)
                 .body(logoutBody)
                 .when()
                 .post("/auth/logout/")
                 .then()
-                .spec(error401LogoutResponseSpec)
+                .spec(authErrorLogoutResponseSpec)
                 .extract()
                 .as(LogoutAuthErrorResponseModel.class);
     }

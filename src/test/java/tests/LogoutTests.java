@@ -30,7 +30,7 @@ public class LogoutTests extends TestBase {
         String accessToken = loginResponse.access();
         LogoutRequestModel logoutData = new LogoutRequestModel(accessToken);
 
-        LogoutAuthErrorResponseModel logoutResponse = api.auth.error401Logout(logoutData);
+        LogoutAuthErrorResponseModel logoutResponse = api.auth.authErrorLogout(logoutData);
 
         String expectedErrorDetail = WRONG_TOKEN_TYPE_ERROR;
         String expectedErrorCode = VALIDATION_TOKEN_ERROR;
@@ -44,7 +44,7 @@ public class LogoutTests extends TestBase {
     public void withoutTokenLogoutErrorTest() {
         LogoutRequestModel logoutData = new LogoutRequestModel("");
 
-        LogoutValidationErrorResponseModel logoutResponse = api.auth.error400Logout(logoutData);
+        LogoutValidationErrorResponseModel logoutResponse = api.auth.validationErrorLogout(logoutData);
 
         String expectedError = EMPTY_FIELD_ERROR;
         String actualError = logoutResponse.refresh().get(0);
