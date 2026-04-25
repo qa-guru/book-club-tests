@@ -6,7 +6,7 @@ import models.registration.RegistrationRequestModel;
 import models.registration.SuccessfulRegistrationResponseModel;
 
 import static io.restassured.RestAssured.given;
-import static specs.registration.RegistrationSpec.*;
+import static specs.users.registration.RegistrationSpec.*;
 
 public class UsersApiClient {
 

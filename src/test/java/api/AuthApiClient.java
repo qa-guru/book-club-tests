@@ -10,8 +10,8 @@ import models.logout.Error401LogoutResponseModel;
 import models.logout.LogoutRequestModel;
 
 import static io.restassured.RestAssured.given;
-import static specs.login.LoginSpec.*;
-import static specs.logout.LogoutSpec.*;
+import static specs.auth.login.LoginSpec.*;
+import static specs.auth.logout.LogoutSpec.*;
 
 public class AuthApiClient {
 

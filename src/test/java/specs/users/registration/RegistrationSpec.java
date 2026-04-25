@@ -1,4 +1,4 @@
-package specs.registration;
+package specs.users.registration;
 
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.specification.RequestSpecification;
@@ -17,7 +17,7 @@ public class RegistrationSpec {
             .log(ALL)
             .expectStatusCode(201)
             .expectBody(matchesJsonSchemaInClasspath(
-                    "schemas/registration/successful_registration_response_schema.json"))
+                    "schemas/users/successful_user_response_schema.json"))
             .expectBody("id", notNullValue())
             .expectBody("username", notNullValue())
             .expectBody("remoteAddr", notNullValue())
@@ -27,7 +27,7 @@ public class RegistrationSpec {
             .log(ALL)
             .expectStatusCode(400)
             .expectBody(matchesJsonSchemaInClasspath(
-                    "schemas/registration/existing_user_registration_response_schema.json"))
+                    "schemas/users/registration/existing_user_registration_response_schema.json"))
             .expectBody("username", notNullValue())
             .build();
 
@@ -35,7 +35,7 @@ public class RegistrationSpec {
             .log(ALL)
             .expectStatusCode(400)
             .expectBody(matchesJsonSchemaInClasspath(
-                    "schemas/registration/empty_field_registration_response_schema.json"))
+                    "schemas/users/registration/empty_field_registration_response_schema.json"))
             .build();
 }
 

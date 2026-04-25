@@ -1,4 +1,4 @@
-package specs.login;
+package specs.auth.login;
 
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.specification.RequestSpecification;
@@ -16,7 +16,7 @@ public class LoginSpec {
             .log(ALL)
             .expectStatusCode(200)
             .expectBody(matchesJsonSchemaInClasspath(
-                    "schemas/login/successful_login_response_schema.json"))
+                    "schemas/auth/login/successful_login_response_schema.json"))
             .expectBody("access", notNullValue())
             .expectBody("refresh", notNullValue())
             .build();
@@ -25,7 +25,7 @@ public class LoginSpec {
             .log(ALL)
             .expectStatusCode(401)
             .expectBody(matchesJsonSchemaInClasspath(
-                    "schemas/login/wrong_credentials_login_response_schema.json"))
+                    "schemas/auth/login/wrong_credentials_login_response_schema.json"))
             .expectBody("detail", notNullValue())
             .build();
 
@@ -33,7 +33,7 @@ public class LoginSpec {
             .log(ALL)
             .expectStatusCode(400)
             .expectBody(matchesJsonSchemaInClasspath(
-                    "schemas/login/empty_field_login_response_schema.json"))
+                    "schemas/auth/login/empty_field_login_response_schema.json"))
             .build();
 
 

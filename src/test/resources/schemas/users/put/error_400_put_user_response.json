@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Required fields empty user resp",
+  "type": "object",
+  "properties": {
+    "username": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "firstName": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "lastName": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "email": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+  },
+  "minProperties": 1,
+  "additionalProperties": false
+}
