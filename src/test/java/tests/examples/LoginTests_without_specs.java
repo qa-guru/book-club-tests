@@ -1,8 +1,8 @@
 package tests.examples;
 
-import models.login.LoginRequestModel;
-import models.login.SuccessfulLoginResponseModel;
-import models.login.WrongCredentialsLoginResponseModel;
+import models.auth.login.LoginRequestModel;
+import models.auth.login.LoginSuccessResponseModel;
+import models.auth.login.LoginAuthErrorResponseModel;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import tests.TestBase;
@@ -25,7 +25,7 @@ public class LoginTests_without_specs extends TestBase {
     public void successfulLoginTest(){
         LoginRequestModel loginData = new LoginRequestModel(username, password);
 
-        SuccessfulLoginResponseModel loginResponse = given()
+        LoginSuccessResponseModel loginResponse = given()
                 .log().all()
                 .contentType(JSON)
                 .body(loginData)
@@ -38,7 +38,7 @@ public class LoginTests_without_specs extends TestBase {
                 .body(matchesJsonSchemaInClasspath("schemas/auth/login/successful_login_response_schema.json"))
                 .body("access", notNullValue())
                 .body("refresh", notNullValue())
-                .extract().as(SuccessfulLoginResponseModel.class);
+                .extract().as(LoginSuccessResponseModel.class);
 
         String expectedTokenPath = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
         String actualAccess = loginResponse.access();
@@ -54,7 +54,7 @@ public class LoginTests_without_specs extends TestBase {
     public void wrongCredentialsLoginTest(){
         LoginRequestModel loginData = new LoginRequestModel(username, wrongPassword);
 
-        WrongCredentialsLoginResponseModel loginResponse = given()
+        LoginAuthErrorResponseModel loginResponse = given()
                 .log().all()
                 .contentType(JSON)
                 .body(loginData)
@@ -65,9 +65,9 @@ public class LoginTests_without_specs extends TestBase {
                 .log().all()
                 .statusCode(401)
                 .body(matchesJsonSchemaInClasspath(
-                        "schemas/auth/login/wrong_credentials_login_response_schema.json"))
+                        "schemas/auth/login/auth_error_login_response_schema.json"))
                 .body("detail", notNullValue())
-                .extract().as(WrongCredentialsLoginResponseModel.class);
+                .extract().as(LoginAuthErrorResponseModel.class);
 
         String expectedDetailError = "Invalid username or password.";
         String actualDetailError = loginResponse.detail();

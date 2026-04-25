@@ -1,11 +1,11 @@
-package models.registration;
+package models.users.registration;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record ErrorFieldRegistrationResponseModel(List<String> username,
-                                                  List<String> password) {
+public record RegistrationValidationErrorResponseModel(List<String> username,
+                                                       List<String> password) {
 
     public String getError() {
         if (username != null && !username.isEmpty()) return username.get(0);

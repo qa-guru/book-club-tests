@@ -1,9 +1,9 @@
 package tests;
 
-import models.login.EmptyFieldLoginResponseModel;
-import models.login.LoginRequestModel;
-import models.login.SuccessfulLoginResponseModel;
-import models.login.WrongCredentialsLoginResponseModel;
+import models.auth.login.LoginValidationErrorResponseModel;
+import models.auth.login.LoginRequestModel;
+import models.auth.login.LoginSuccessResponseModel;
+import models.auth.login.LoginAuthErrorResponseModel;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,7 +15,7 @@ public class LoginTests extends TestBase {
     public void successfulLoginTest() {
         LoginRequestModel loginData = new LoginRequestModel(LOGIN_USERNAME, LOGIN_PASSWORD);
 
-        SuccessfulLoginResponseModel loginResponse = api.auth.login(loginData);
+        LoginSuccessResponseModel loginResponse = api.auth.login(loginData);
 
         String actualAccess = loginResponse.access();
         String actualRefresh = loginResponse.refresh();
@@ -28,29 +28,31 @@ public class LoginTests extends TestBase {
     public void wrongPasswordLoginTest() {
         LoginRequestModel loginData = new LoginRequestModel(LOGIN_USERNAME, LOGIN_WRONG_PASSWORD);
 
-        WrongCredentialsLoginResponseModel loginResponse = api.auth.loginWrongCredentials(loginData);
+        LoginAuthErrorResponseModel loginResponse = api.auth.loginWrongCredentials(loginData);
 
         String expectedError = LOGIN_WRONG_CREDENTIALS_ERROR;
         String actualError = loginResponse.detail();
         assertThat(actualError).isEqualTo(expectedError);
     }
 
+    // 401 WrongCredentials
     @Test
     public void wrongUsernameLoginTest() {
         LoginRequestModel loginData = new LoginRequestModel(LOGIN_WRONG_USERNAME, LOGIN_PASSWORD);
 
-        WrongCredentialsLoginResponseModel loginResponse = api.auth.loginWrongCredentials(loginData);
+        LoginAuthErrorResponseModel loginResponse = api.auth.loginWrongCredentials(loginData);
 
         String expectedError = LOGIN_WRONG_CREDENTIALS_ERROR;
         String actualError = loginResponse.detail();
         assertThat(actualError).isEqualTo(expectedError);
     }
 
+    // 400 EmptyField
     @Test
     public void emptyUsernameLoginTest() {
         LoginRequestModel loginData = new LoginRequestModel("", LOGIN_PASSWORD);
 
-        EmptyFieldLoginResponseModel loginResponse = api.auth.loginEmptyField(loginData);
+        LoginValidationErrorResponseModel loginResponse = api.auth.loginEmptyField(loginData);
 
         String expectedError = EMPTY_FIELD_ERROR;
         String actualError = loginResponse.username().get(0);
@@ -61,7 +63,7 @@ public class LoginTests extends TestBase {
     public void emptyPasswordLoginTest() {
         LoginRequestModel loginData = new LoginRequestModel(LOGIN_USERNAME, "");
 
-        EmptyFieldLoginResponseModel loginResponse = api.auth.loginEmptyField(loginData);
+        LoginValidationErrorResponseModel loginResponse = api.auth.loginEmptyField(loginData);
 
         String expectedError = EMPTY_FIELD_ERROR;
         String actualError = loginResponse.password().get(0);
@@ -72,7 +74,7 @@ public class LoginTests extends TestBase {
     public void emptyFieldsLoginTest() {
         LoginRequestModel loginData = new LoginRequestModel("", "");
 
-        EmptyFieldLoginResponseModel loginResponse = api.auth.loginEmptyField(loginData);
+        LoginValidationErrorResponseModel loginResponse = api.auth.loginEmptyField(loginData);
 
         String expectedError = EMPTY_FIELD_ERROR;
         String actualUsernameError = loginResponse.username().get(0);

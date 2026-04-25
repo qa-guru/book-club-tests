@@ -1,16 +1,15 @@
 package api;
 
-import models.registration.ErrorFieldRegistrationResponseModel;
-import models.registration.ExistingUserResponseModel;
-import models.registration.RegistrationRequestModel;
-import models.registration.SuccessfulRegistrationResponseModel;
+import models.users.registration.RegistrationValidationErrorResponseModel;
+import models.users.registration.RegistrationRequestModel;
+import models.users.registration.RegistrationSuccessResponseModel;
 
 import static io.restassured.RestAssured.given;
 import static specs.users.registration.RegistrationSpec.*;
 
 public class UsersApiClient {
 
-    public SuccessfulRegistrationResponseModel register(RegistrationRequestModel body) {
+    public RegistrationSuccessResponseModel register(RegistrationRequestModel body) {
         return given(registrationRequestSpec)
                 .body(body)
                 .when()
@@ -18,10 +17,10 @@ public class UsersApiClient {
                 .then()
                 .spec(successfulRegistrationResponseSpec)
                 .extract()
-                .as(SuccessfulRegistrationResponseModel.class);
+                .as(RegistrationSuccessResponseModel.class);
     }
 
-    public ExistingUserResponseModel registerExistingUser(RegistrationRequestModel body) {
+    public RegistrationValidationErrorResponseModel registerExistingUser(RegistrationRequestModel body) {
         return given(registrationRequestSpec)
                 .body(body)
                 .when()
@@ -29,10 +28,10 @@ public class UsersApiClient {
                 .then()
                 .spec(existingUserRegistrationResponseSpec)
                 .extract()
-                .as(ExistingUserResponseModel.class);
+                .as(RegistrationValidationErrorResponseModel.class);
     }
 
-    public ErrorFieldRegistrationResponseModel registerEmptyField(RegistrationRequestModel body) {
+    public RegistrationValidationErrorResponseModel registerEmptyField(RegistrationRequestModel body) {
         return given(registrationRequestSpec)
                 .body(body)
                 .when()
@@ -40,6 +39,6 @@ public class UsersApiClient {
                 .then()
                 .spec(emptyFieldRegistrationResponseSpec)
                 .extract()
-                .as(ErrorFieldRegistrationResponseModel.class);
+                .as(RegistrationValidationErrorResponseModel.class);
     }
 }

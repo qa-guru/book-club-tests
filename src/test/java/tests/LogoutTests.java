@@ -1,10 +1,10 @@
 package tests;
 
-import models.login.LoginRequestModel;
-import models.login.SuccessfulLoginResponseModel;
-import models.logout.Error400LogoutResponseModel;
-import models.logout.Error401LogoutResponseModel;
-import models.logout.LogoutRequestModel;
+import models.auth.login.LoginRequestModel;
+import models.auth.login.LoginSuccessResponseModel;
+import models.auth.logout.LogoutValidationErrorResponseModel;
+import models.auth.logout.LogoutAuthErrorResponseModel;
+import models.auth.logout.LogoutRequestModel;
 import org.junit.jupiter.api.Test;
 
 import static tests.TestData.*;
@@ -25,12 +25,12 @@ public class LogoutTests extends TestBase {
     public void accessTokenLogoutErrorTest() {
         LoginRequestModel loginData = new LoginRequestModel(LOGIN_USERNAME, LOGIN_PASSWORD);
 
-        SuccessfulLoginResponseModel loginResponse = api.auth.login(loginData);
+        LoginSuccessResponseModel loginResponse = api.auth.login(loginData);
 
         String accessToken = loginResponse.access();
         LogoutRequestModel logoutData = new LogoutRequestModel(accessToken);
 
-        Error401LogoutResponseModel logoutResponse = api.auth.error401Logout(logoutData);
+        LogoutAuthErrorResponseModel logoutResponse = api.auth.error401Logout(logoutData);
 
         String expectedErrorDetail = WRONG_TOKEN_TYPE_ERROR;
         String expectedErrorCode = VALIDATION_TOKEN_ERROR;
@@ -44,7 +44,7 @@ public class LogoutTests extends TestBase {
     public void withoutTokenLogoutErrorTest() {
         LogoutRequestModel logoutData = new LogoutRequestModel("");
 
-        Error400LogoutResponseModel logoutResponse = api.auth.error400Logout(logoutData);
+        LogoutValidationErrorResponseModel logoutResponse = api.auth.error400Logout(logoutData);
 
         String expectedError = EMPTY_FIELD_ERROR;
         String actualError = logoutResponse.refresh().get(0);

@@ -1,13 +1,13 @@
 package api;
 
 import io.qameta.allure.Step;
-import models.login.EmptyFieldLoginResponseModel;
-import models.login.LoginRequestModel;
-import models.login.SuccessfulLoginResponseModel;
-import models.login.WrongCredentialsLoginResponseModel;
-import models.logout.Error400LogoutResponseModel;
-import models.logout.Error401LogoutResponseModel;
-import models.logout.LogoutRequestModel;
+import models.auth.login.LoginValidationErrorResponseModel;
+import models.auth.login.LoginRequestModel;
+import models.auth.login.LoginSuccessResponseModel;
+import models.auth.login.LoginAuthErrorResponseModel;
+import models.auth.logout.LogoutValidationErrorResponseModel;
+import models.auth.logout.LogoutAuthErrorResponseModel;
+import models.auth.logout.LogoutRequestModel;
 
 import static io.restassured.RestAssured.given;
 import static specs.auth.login.LoginSpec.*;
@@ -15,7 +15,7 @@ import static specs.auth.logout.LogoutSpec.*;
 
 public class AuthApiClient {
 
-    public SuccessfulLoginResponseModel login(LoginRequestModel loginBody) {
+    public LoginSuccessResponseModel login(LoginRequestModel loginBody) {
         return given(loginRequestSpec)
                 .body(loginBody)
                 .when()
@@ -23,7 +23,7 @@ public class AuthApiClient {
                 .then()
                 .spec(successfulLoginResponseSpec)
                 .extract()
-                .as(SuccessfulLoginResponseModel.class);
+                .as(LoginSuccessResponseModel.class);
     }
 
     @Step("Авторизация и получение рефреш-токена")
@@ -38,7 +38,7 @@ public class AuthApiClient {
                 .path("refresh");
     }
 
-    public WrongCredentialsLoginResponseModel loginWrongCredentials(LoginRequestModel loginBody) {
+    public LoginAuthErrorResponseModel loginWrongCredentials(LoginRequestModel loginBody) {
         return given(loginRequestSpec)
                 .body(loginBody)
                 .when()
@@ -46,10 +46,10 @@ public class AuthApiClient {
                 .then()
                 .spec(wrongCredentialsLoginResponseSpec)
                 .extract()
-                .as(WrongCredentialsLoginResponseModel.class);
+                .as(LoginAuthErrorResponseModel.class);
     }
 
-    public EmptyFieldLoginResponseModel loginEmptyField(LoginRequestModel loginBody) {
+    public LoginValidationErrorResponseModel loginEmptyField(LoginRequestModel loginBody) {
         return  given(loginRequestSpec)
                 .body(loginBody)
                 .when()
@@ -57,7 +57,7 @@ public class AuthApiClient {
                 .then()
                 .spec(emptyFieldLoginResponseSpec)
                 .extract()
-                .as(EmptyFieldLoginResponseModel.class);
+                .as(LoginValidationErrorResponseModel.class);
     }
 
     @Step("Отправка запроса logout")
@@ -70,7 +70,7 @@ public class AuthApiClient {
                 .spec(successfulLogoutResponseSpec);
     }
 
-    public Error400LogoutResponseModel error400Logout(LogoutRequestModel logoutBody) {
+    public LogoutValidationErrorResponseModel error400Logout(LogoutRequestModel logoutBody) {
         return given(logoutRequestSpec)
                 .body(logoutBody)
                 .when()
@@ -78,10 +78,10 @@ public class AuthApiClient {
                 .then()
                 .spec(error400LogoutResponseSpec)
                 .extract()
-                .as(Error400LogoutResponseModel.class);
+                .as(LogoutValidationErrorResponseModel.class);
     }
 
-    public Error401LogoutResponseModel error401Logout(LogoutRequestModel logoutBody) {
+    public LogoutAuthErrorResponseModel error401Logout(LogoutRequestModel logoutBody) {
         return given(logoutRequestSpec)
                 .body(logoutBody)
                 .when()
@@ -89,7 +89,7 @@ public class AuthApiClient {
                 .then()
                 .spec(error401LogoutResponseSpec)
                 .extract()
-                .as(Error401LogoutResponseModel.class);
+                .as(LogoutAuthErrorResponseModel.class);
     }
 }
 

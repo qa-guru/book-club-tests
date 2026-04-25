@@ -25,7 +25,7 @@ public class LoginSpec {
             .log(ALL)
             .expectStatusCode(401)
             .expectBody(matchesJsonSchemaInClasspath(
-                    "schemas/auth/login/wrong_credentials_login_response_schema.json"))
+                    "schemas/auth/login/auth_error_login_response_schema.json"))
             .expectBody("detail", notNullValue())
             .build();
 
@@ -33,7 +33,7 @@ public class LoginSpec {
             .log(ALL)
             .expectStatusCode(400)
             .expectBody(matchesJsonSchemaInClasspath(
-                    "schemas/auth/login/empty_field_login_response_schema.json"))
+                    "schemas/auth/login/validation_error_login_response_schema.json"))
             .build();
 
 

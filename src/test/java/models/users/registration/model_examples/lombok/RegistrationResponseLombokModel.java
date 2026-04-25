@@ -1,4 +1,4 @@
-package models.registration.model_examples.lombok;
+package models.users.registration.model_examples.lombok;
 
 import lombok.Data;
 
