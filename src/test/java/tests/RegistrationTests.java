@@ -1,14 +1,13 @@
 package tests;
 
-import models.registration.ExistingUserResponseModel;
-import models.registration.RegistrationBodyModel;
-import models.registration.SuccessfulRegistrationResponseModel;
+import models.users.registration.RegistrationValidationErrorResponseModel;
+import models.users.registration.RegistrationRequestModel;
+import models.users.UserSuccessResponseModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static tests.TestData.REGISTRATION_EXISTING_USER_ERROR;
-import static tests.TestData.REGISTRATION_IP_REGEXP;
+import static tests.TestData.*;
 
 public class RegistrationTests extends TestBase {
 
@@ -24,9 +23,9 @@ public class RegistrationTests extends TestBase {
 
     @Test
     public void successfulRegistrationTest() {
-        RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
+        RegistrationRequestModel registrationData = new RegistrationRequestModel(username, password);
 
-        SuccessfulRegistrationResponseModel registrationResponse =
+        UserSuccessResponseModel registrationResponse =
                 api.users.register(registrationData);
 
         assertThat(registrationResponse.id()).isGreaterThan(0);
@@ -40,21 +39,71 @@ public class RegistrationTests extends TestBase {
 
     @Test
     public void existingUserWrongRegistrationTest() {
-        RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
+        RegistrationRequestModel registrationData = new RegistrationRequestModel(username, password);
 
-        SuccessfulRegistrationResponseModel firstRegistrationResponse =
+        UserSuccessResponseModel firstRegistrationResponse =
                 api.users.register(registrationData);
 
         assertThat(firstRegistrationResponse.username()).isEqualTo(username);
 
-        ExistingUserResponseModel secondRegistrationResponse =
-                api.users.registerExistingUser(registrationData);
+        RegistrationValidationErrorResponseModel secondRegistrationResponse =
+                api.users.validationErrorRegister(registrationData);
 
         String expectedError = REGISTRATION_EXISTING_USER_ERROR;
         String actualError = secondRegistrationResponse.username().get(0);
         assertThat(actualError).isEqualTo(expectedError);
     }
 
-    // todo add more negative tests
+    @Test
+    public void emptyPasswordRegistrationTest() {
+        RegistrationRequestModel registrationData = new RegistrationRequestModel(username, "");
+
+        RegistrationValidationErrorResponseModel registrationResponse =
+                api.users.validationErrorRegister(registrationData);
+
+        String expectedError = EMPTY_FIELD_ERROR;
+        String actualError = registrationResponse.getError();
+        assertThat(actualError).isEqualTo(expectedError);
+    }
+
+    @Test
+    public void emptyUsernameRegistrationTest() {
+        RegistrationRequestModel registrationData = new RegistrationRequestModel("", password);
+
+        RegistrationValidationErrorResponseModel registrationResponse =
+                api.users.validationErrorRegister(registrationData);
+
+        String expectedError = EMPTY_FIELD_ERROR;
+        String actualError = registrationResponse.getError();
+        assertThat(actualError).isEqualTo(expectedError);
+    }
+
+    @Test
+    public void longUsernameRegistrationTest() {
+        String longName = LONG_USERNAME;
+
+        RegistrationRequestModel registrationData = new RegistrationRequestModel(longName, password);
+
+        RegistrationValidationErrorResponseModel registrationResponse =
+                api.users.validationErrorRegister(registrationData);
+
+        String expectedError = LONG_USERNAME_ERROR;
+        String actualError = registrationResponse.getError();
+        assertThat(actualError).isEqualTo(expectedError);
+    }
+
+    @Test
+    public void longPasswordRegistrationTest() {
+        String longPassword = LONG_PASSWORD;
+
+        RegistrationRequestModel registrationData = new RegistrationRequestModel(username, longPassword);
+
+        RegistrationValidationErrorResponseModel registrationResponse =
+                api.users.validationErrorRegister(registrationData);
+
+        String expectedError = LONG_PASSWORD_ERROR;
+        String actualError = registrationResponse.getError();
+        assertThat(actualError).isEqualTo(expectedError);
+    }
 
 }

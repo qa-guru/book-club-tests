@@ -1,0 +1,9 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Logout 400 error auth resp",
+  "type": "object",
+  "properties": {
+    "refresh": {"type": "array", "items": {"type": "string"}, "minItems": 1}
+  },
+  "required": ["refresh"]
+}

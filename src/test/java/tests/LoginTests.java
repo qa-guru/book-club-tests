@@ -1,8 +1,9 @@
 package tests;
 
-import models.login.LoginBodyModel;
-import models.login.SuccessfulLoginResponseModel;
-import models.login.WrongCredentialsLoginResponseModel;
+import models.auth.login.LoginValidationErrorResponseModel;
+import models.auth.login.LoginRequestModel;
+import models.auth.login.LoginSuccessResponseModel;
+import models.auth.login.LoginAuthErrorResponseModel;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -12,9 +13,9 @@ public class LoginTests extends TestBase {
 
     @Test
     public void successfulLoginTest() {
-        LoginBodyModel loginData = new LoginBodyModel(LOGIN_USERNAME, LOGIN_PASSWORD);
+        LoginRequestModel loginData = new LoginRequestModel(LOGIN_USERNAME, LOGIN_PASSWORD);
 
-        SuccessfulLoginResponseModel loginResponse = api.auth.login(loginData);
+        LoginSuccessResponseModel loginResponse = api.auth.login(loginData);
 
         String actualAccess = loginResponse.access();
         String actualRefresh = loginResponse.refresh();
@@ -24,16 +25,62 @@ public class LoginTests extends TestBase {
     }
 
     @Test
-    public void wrongCredentialsLoginTest() {
-        LoginBodyModel loginData = new LoginBodyModel(LOGIN_USERNAME, LOGIN_WRONG_PASSWORD);
+    public void wrongPasswordLoginTest() {
+        LoginRequestModel loginData = new LoginRequestModel(LOGIN_USERNAME, LOGIN_WRONG_PASSWORD);
 
-        WrongCredentialsLoginResponseModel loginResponse = api.auth.loginWrongCredentials(loginData);
+        LoginAuthErrorResponseModel loginResponse = api.auth.loginWrongCredentials(loginData);
 
-        String expectedDetailError = LOGIN_WRONG_CREDENTIALS_ERROR;
-        String actualDetailError = loginResponse.detail();
-        assertThat(actualDetailError).isEqualTo(expectedDetailError);
+        String expectedError = LOGIN_WRONG_CREDENTIALS_ERROR;
+        String actualError = loginResponse.detail();
+        assertThat(actualError).isEqualTo(expectedError);
     }
 
-    // todo add more negative tests
+    // 401 WrongCredentials
+    @Test
+    public void wrongUsernameLoginTest() {
+        LoginRequestModel loginData = new LoginRequestModel(LOGIN_WRONG_USERNAME, LOGIN_PASSWORD);
+
+        LoginAuthErrorResponseModel loginResponse = api.auth.loginWrongCredentials(loginData);
+
+        String expectedError = LOGIN_WRONG_CREDENTIALS_ERROR;
+        String actualError = loginResponse.detail();
+        assertThat(actualError).isEqualTo(expectedError);
+    }
+
+    // 400 EmptyField
+    @Test
+    public void emptyUsernameLoginTest() {
+        LoginRequestModel loginData = new LoginRequestModel("", LOGIN_PASSWORD);
+
+        LoginValidationErrorResponseModel loginResponse = api.auth.loginEmptyField(loginData);
+
+        String expectedError = EMPTY_FIELD_ERROR;
+        String actualError = loginResponse.username().get(0);
+        assertThat(actualError).isEqualTo(expectedError);
+    }
+
+    @Test
+    public void emptyPasswordLoginTest() {
+        LoginRequestModel loginData = new LoginRequestModel(LOGIN_USERNAME, "");
+
+        LoginValidationErrorResponseModel loginResponse = api.auth.loginEmptyField(loginData);
+
+        String expectedError = EMPTY_FIELD_ERROR;
+        String actualError = loginResponse.password().get(0);
+        assertThat(actualError).isEqualTo(expectedError);
+    }
+
+    @Test
+    public void emptyFieldsLoginTest() {
+        LoginRequestModel loginData = new LoginRequestModel("", "");
+
+        LoginValidationErrorResponseModel loginResponse = api.auth.loginEmptyField(loginData);
+
+        String expectedError = EMPTY_FIELD_ERROR;
+        String actualUsernameError = loginResponse.username().get(0);
+        String actualPasswordError = loginResponse.password().get(0);
+        assertThat(actualUsernameError).isEqualTo(expectedError);
+        assertThat(actualPasswordError).isEqualTo(expectedError);
+    }
 
 }

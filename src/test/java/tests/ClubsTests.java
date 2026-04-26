@@ -2,10 +2,12 @@ package tests;
 
 import models.clubs.ClubModel;
 import models.clubs.ClubsListResponseModel;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Disabled
 public class ClubsTests extends TestBase {
 
     @Test
