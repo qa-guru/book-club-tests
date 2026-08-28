@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "JWT token_not_valid error",
+  "type": "object",
+  "properties": {
+    "detail": { "type": "string" },
+    "code": { "type": "string" },
+    "messages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "tokenClass": { "type": "string" },
+          "tokenType": { "type": "string" },
+          "message": { "type": "string" }
+        },
+        "required": ["tokenClass", "tokenType", "message"]
+      }
+    }
+  },
+  "required": ["detail", "code", "messages"]
+}
